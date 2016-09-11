@@ -11,6 +11,7 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Textures;
 using TGC.Core.Utils;
 using TGC.Group.Camera;
+using TGC.Group.Optimization;
 
 namespace TGC.Group.Model
 {
@@ -48,7 +49,7 @@ namespace TGC.Group.Model
         private TgcMesh arbolBananas;
         private TgcMesh barrilPolvora;
         private TgcPlane suelo;
-
+        private KdTree kdTree;
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
         ///     Escribir aquí todo el código de inicialización: cargar modelos, texturas, estructuras de optimización, todo
@@ -59,7 +60,7 @@ namespace TGC.Group.Model
         {
             //Crear suelo
             var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\pasto.jpg");
-            suelo = new TgcPlane(new Vector3(-500, 0, -500), new Vector3(2000, 0, 2000), TgcPlane.Orientations.XZplane, pisoTexture, 10f, 10f);
+            suelo = new TgcPlane(new Vector3(-500, 0, -500), new Vector3(50000, 0, 50000), TgcPlane.Orientations.XZplane, pisoTexture, 10f, 10f);
 
             //Cargar modelo de palmera original
             var loader = new TgcSceneLoader();
@@ -132,6 +133,10 @@ namespace TGC.Group.Model
 
             meshes.Add(instanceB);
 
+            kdTree = new KdTree();
+            kdTree.create(meshes, suelo.BoundingBox);
+            kdTree.createDebugKdTreeMeshes();
+
             //Camara en primera persona
             Camara = new TgcFpsCamera(new Vector3(900f, 400f, 900f), Input);
         }
@@ -160,10 +165,12 @@ namespace TGC.Group.Model
             suelo.render();
 
             //Renderizar instancias
-            foreach (var mesh in meshes)
+            /*foreach (var mesh in meshes)
             {
                 mesh.render();
-            }
+            }*/
+
+            kdTree.render(Frustum, false);
 
             PostRender();
         }

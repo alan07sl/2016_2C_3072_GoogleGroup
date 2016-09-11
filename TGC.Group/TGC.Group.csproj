@@ -90,6 +90,9 @@
     <Compile Include="Model\GameModel_v2.cs" />
     <Compile Include="Model\GameModel_ORIGINAL.cs" />
     <Compile Include="Model\GameModel.cs" />
+    <Compile Include="Optimization\KdTree.cs" />
+    <Compile Include="Optimization\KdTreeBuilder.cs" />
+    <Compile Include="Optimization\KdTreeNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
