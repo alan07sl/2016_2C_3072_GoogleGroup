@@ -11,6 +11,7 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Textures;
 using TGC.Core.Utils;
 using TGC.Group.Camera;
+using TGC.Group.Helpers;
 
 namespace TGC.Group.Model
 {
@@ -48,6 +49,8 @@ namespace TGC.Group.Model
         private TgcMesh arbolBananas;
         private TgcMesh barrilPolvora;
         private TgcPlane suelo;
+        private List<TgcPlane> terreno;
+        private TgcPlane suelo2;
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -94,10 +97,21 @@ namespace TGC.Group.Model
             //Internamente el framework construye la matriz de view con estos dos vectores.
             //Luego en nuestro juego tendremos que crear una cámara que cambie la matriz de view con variables como movimientos o animaciones de escenas.
             */
-            
-            //Crear suelo
+
+            //Cargar y crear texturas para el terreno.
             var pisoTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\pasto.jpg");
+            var arenaTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\sand.jpg");
+            var TransicionPastoArenaDownTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + "Texturas\\TransicionPastoArenaDown.jpg");
+
+            //Crear lista de terreno
+            terreno = new List<TgcPlane>();
+
             suelo = new TgcPlane(new Vector3(-500, 0, -500), new Vector3(2000, 0, 2000), TgcPlane.Orientations.XZplane, pisoTexture, 10f, 10f);
+            terreno.Add(suelo);
+
+            //Crear mas suelo.. de alguna manera tienen que ir cargandose a medida que voy avanzando pero las texturas deberian estar creadas con anterioridad
+            suelo2 = new TgcPlane(new Vector3(-500, 0, 1500), new Vector3(2000, 0, 2000), TgcPlane.Orientations.XZplane, arenaTexture, 10f, 10f);
+            terreno.Add(suelo2);
 
             //Cargar modelo de palmera original
             var loader = new TgcSceneLoader();
@@ -183,6 +197,8 @@ namespace TGC.Group.Model
         {
             PreUpdate();
 
+            //TerrainHelper.updateTerreno(terreno, MediaDir, Camara.Position);
+
             /*
 
             //Capturar Input teclado
@@ -255,7 +271,11 @@ namespace TGC.Group.Model
             */
 
             //Renderizar suelo
-            suelo.render();
+            foreach (var parcela in terreno)
+            {
+                parcela.render();
+            }
+            
 
             //Renderizar instancias
             foreach (var mesh in meshes)
@@ -283,6 +303,7 @@ namespace TGC.Group.Model
             */
 
             suelo.dispose();
+            suelo2.dispose();
 
             //Al hacer dispose del original, se hace dispose automaticamente de todas las instancias
             palmeraOriginal.dispose();
